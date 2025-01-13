@@ -63,7 +63,7 @@ const FindResult = struct {
 };
 fn findEntry(self: @This(), index: Pos) FindResult {
     var a: Pos = 0;
-    for (self.entries.items) |e, i| {
+    for (self.entries.items, 0..) |e, i| {
         if (index < a + e.len) {
             return .{
                 .start = a,
@@ -248,7 +248,7 @@ pub fn delete(self: *@This(), index: Pos, length: Pos) error{ OutOfBounds, OutOf
 }
 
 fn expectGets(expected: []const u8, pt: PieceTable) !void {
-    for (expected) |c, i| {
+    for (expected, 0..) |c, i| {
         const actual = try pt.get(i);
         if (c != actual) {
             std.debug.print("index {} incorrect. expected {}, found {}\n", .{
