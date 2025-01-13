@@ -38,7 +38,7 @@ pub const Entry = struct {
     }
 };
 
-pub fn init(allocator: *std.mem.Allocator, base: []const u8) error{OutOfMemory}!@This() {
+pub fn init(allocator: std.mem.Allocator, base: []const u8) error{OutOfMemory}!@This() {
     var pt = PieceTable{
         .base = base,
         .add_buffer = std.ArrayList(u8).init(allocator),
@@ -233,7 +233,7 @@ pub fn delete(self: *@This(), index: Pos, length: Pos) error{ OutOfBounds, OutOf
             // TODO: send zig PR adding ArrayList.orderedRemoveMany
             const i = entry_index;
             const n = entries_to_delete;
-            std.mem.copy(Entry, self.entries.items[i..], self.entries.items[i + n ..]);
+            std.mem.copyBackwards(Entry, self.entries.items[i..], self.entries.items[i + n ..]);
             self.entries.shrinkRetainingCapacity(self.entries.items.len - n);
         }
 
