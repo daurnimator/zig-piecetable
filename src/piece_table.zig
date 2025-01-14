@@ -205,7 +205,7 @@ pub fn delete(self: *@This(), index: Pos, length: Pos) error{ OutOfBounds, OutOf
 
         if (split_point != 0) {
             // delete starting in the middle of an entry
-            const start_entry = &self.entries.items[start_entry_index];
+            var start_entry = &self.entries.items[start_entry_index];
             const available_to_delete = start_entry.len - split_point;
             if (available_to_delete > length_to_delete) {
                 // split the entry
