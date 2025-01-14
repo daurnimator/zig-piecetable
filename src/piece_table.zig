@@ -209,7 +209,7 @@ pub fn delete(self: *@This(), index: Pos, length: Pos) error{ OutOfBounds, OutOf
             const available_to_delete = start_entry.len - split_point;
             if (available_to_delete > length_to_delete) {
                 // split the entry
-                try self.entries.insert(entry_index, .{
+                try self.entries.insert(entry_index + 1, .{
                     .from = start_entry.from + split_point + length_to_delete,
                     .len = available_to_delete - length_to_delete,
                 });
