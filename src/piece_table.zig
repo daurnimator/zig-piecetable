@@ -213,6 +213,9 @@ pub fn delete(self: *@This(), index: Pos, length: Pos) error{ OutOfBounds, OutOf
                     .from = start_entry.from + split_point + length_to_delete,
                     .len = available_to_delete - length_to_delete,
                 });
+                // Get this again because insertion can cause reallocation
+                // and thus invalidation of cached pointers
+                start_entry = &self.entries.items[start_entry_index];
                 start_entry.len = split_point;
                 return;
             }
@@ -233,7 +236,7 @@ pub fn delete(self: *@This(), index: Pos, length: Pos) error{ OutOfBounds, OutOf
             // TODO: send zig PR adding ArrayList.orderedRemoveMany
             const i = entry_index;
             const n = entries_to_delete;
-            std.mem.copyBackwards(Entry, self.entries.items[i..], self.entries.items[i + n ..]);
+            std.mem.copyForwards(Entry, self.entries.items[i..], self.entries.items[i + n ..]);
             self.entries.shrinkRetainingCapacity(self.entries.items.len - n);
         }
 
