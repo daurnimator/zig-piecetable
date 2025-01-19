@@ -227,17 +227,14 @@ pub fn delete(self: *@This(), index: Pos, length: Pos) error{ OutOfBounds, OutOf
         var entries_to_delete: usize = 0;
         while (entry_index < self.entries.items.len) : (entry_index += 1) {
             const e = self.entries.items[entry_index];
-            if (length_to_delete < e.len) break;
+            if (length_to_delete <= e.len) break;
             entries_to_delete += 1;
             length_to_delete -= e.len;
         }
-
         if (entries_to_delete > 0) {
-            // TODO: send zig PR adding ArrayList.orderedRemoveMany
             const i = entry_index;
             const n = entries_to_delete;
-            std.mem.copyForwards(Entry, self.entries.items[i..], self.entries.items[i + n ..]);
-            self.entries.shrinkRetainingCapacity(self.entries.items.len - n);
+            try self.entries.replaceRange(i, n, &[0]Entry{});
         }
 
         if (length_to_delete != 0) {
@@ -274,7 +271,10 @@ test "PieceTable" {
     try pt.append(". this");
     try expectGets("example content. this", pt);
 
-    try pt.append(" was appended.");
+    try pt.append(" was appended..");
+    try expectGets("example content. this was appended..", pt);
+
+    try pt.delete(35, 1);
     try expectGets("example content. this was appended.", pt);
 
     try pt.insert(0, "Some ");
@@ -284,5 +284,11 @@ test "PieceTable" {
     try expectGets("Some content. this was appended.", pt);
 
     try pt.delete(8, 9);
+    try expectGets("Some cons was appended.", pt);
+
+    try pt.insert(0, "\n");
+    try expectGets("\nSome cons was appended.", pt);
+
+    try pt.delete(0, 1);
     try expectGets("Some cons was appended.", pt);
 }
