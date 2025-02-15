@@ -234,7 +234,7 @@ pub fn delete(self: *@This(), index: Pos, length: Pos) error{ OutOfBounds, OutOf
         if (entries_to_delete > 0) {
             const i = entry_index;
             const n = entries_to_delete;
-            try self.entries.replaceRange(i, n, &[0]Entry{});
+            self.entries.replaceRangeAssumeCapacity(i, n, &[0]Entry{});
         }
 
         if (length_to_delete != 0) {
